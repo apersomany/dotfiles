@@ -39,6 +39,7 @@ in
     ./font.nix
     ./noctalia.nix
     ./sway.nix
+    ./user-dirs.nix
   ];
 
   i18n.inputMethod = {
