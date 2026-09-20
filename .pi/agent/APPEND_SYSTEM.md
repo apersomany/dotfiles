@@ -11,13 +11,6 @@
 - Respect the repository's existing package manager and lockfile. When none exists, use `uv` with a project virtual environment for Python or `pnpm` with a local lockfile for JavaScript.
 - Never install project dependencies globally with `pip`, npm, or Yarn.
 
-## Subagents
-
-- For non-trivial work, proactively use the `pi-subagents` skill when scoped reconnaissance, research, implementation, or independent review would improve speed or confidence.
-- Skip delegation when a quick read or direct command costs less than coordination.
-- Keep the parent responsible for scope, synthesis, validation, and user communication.
-- Prefer parallel read-only agents for independent work; allow only one writer per checkout or worktree.
-
 ## Working style
 
 - Read relevant code and callers before editing; fix root causes at shared seams.
