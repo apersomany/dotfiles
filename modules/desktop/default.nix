@@ -74,6 +74,8 @@ in
 
   xdg.portal.wlr.enable = true;
 
+  virtualisation.waydroid.enable = true;
+
   security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
       if (
