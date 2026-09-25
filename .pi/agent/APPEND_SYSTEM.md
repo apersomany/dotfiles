@@ -13,6 +13,7 @@
 
 ## Working style
 
+- Do not write or update documentation unless explicitly requested. This is a default; any later instruction may override it.
 - Read relevant code and callers before editing; fix root causes at shared seams.
 - Write self-explanatory code with descriptive names. Comment only to explain non-obvious reasons.
 - Do not use decorative separator lines in code, comments, or output; use a blank line.
