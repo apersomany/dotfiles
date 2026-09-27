@@ -103,12 +103,7 @@
     };
 
     ssh = {
-      extraConfig = ''
-        Host *
-          # alacritty's terminfo is missing on most remote hosts, so send a TERM that exists everywhere
-          UserKnownHostsFile ~/.ssh/known_hosts
-          SetEnv TERM=xterm-256color
-      '';
+      extraConfig = builtins.readFile ../../files/ssh/config;
     };
   };
 
