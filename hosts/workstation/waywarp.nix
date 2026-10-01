@@ -2,14 +2,14 @@
 {
   imports = [ inputs.waywarp.nixosModules.default ];
 
-  services.waywarp.instances.hkg = {
+  services.waywarp.instances.osaka = {
     index = 0;
-    access.proxy.listen = "127.0.0.1:1080";
-    location = "geo4=HK+edge=HKG";
-    via = [ "mudfish:city=hongkong+provider=azure" ];
+    access.bridge = { };
+    location = "geo4=JP/Osaka+edge=KIX";
+    via = [ "mudfish:city=osaka+provider=azure" ];
     environmentFile = "/var/lib/secrets/waywarp-mudfish.env";
   };
 
-  systemd.services.waywarp-hkg.unitConfig.ConditionPathExists =
-    config.services.waywarp.instances.hkg.environmentFile;
+  systemd.services.waywarp-osaka.unitConfig.ConditionPathExists =
+    config.services.waywarp.instances.osaka.environmentFile;
 }
