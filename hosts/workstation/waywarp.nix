@@ -6,7 +6,7 @@
     index = 0;
     access.proxy.listen = "127.0.0.1:1080";
     location = "geo4=HK+edge=HKG";
-    via = [ "mudfish:city=hongkong" ];
+    via = [ "mudfish:city=hongkong+provider=azure" ];
     environmentFile = "/var/lib/secrets/waywarp-mudfish.env";
   };
 

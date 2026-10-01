@@ -5,7 +5,7 @@ Declarative NixOS configuration for `workstation`.
 ## Hong Kong WARP proxy
 
 Waywarp instance `0` (alias `hkg`) serves SOCKS5 and HTTP CONNECT at
-`127.0.0.1:1080`. It bootstraps through Hong Kong Mudfish relays and requires
+`127.0.0.1:1080`. It bootstraps through Hong Kong Azure Mudfish relays and requires
 `geo4=HK+edge=HKG`: a public IPv4 address advertised in Hong Kong and an HKG
 tunnel endpoint. This does not guarantee every destination exits through HKG
 or that IPv6 is geolocated in Hong Kong.
