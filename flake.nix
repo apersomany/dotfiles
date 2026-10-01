@@ -5,6 +5,10 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     kime.url = "github:riey/kime";
     persway.url = "github:saylesss88/persway";
+    waywarp = {
+      url = "github:apersomany/waywarp";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
