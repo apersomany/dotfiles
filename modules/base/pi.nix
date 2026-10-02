@@ -7,7 +7,11 @@ let
     name = "pi";
     runtimeInputs = [ pkgs.pnpm ];
     text = ''
-      exec pnpx --allow-build=@google/genai --allow-build=protobufjs --allow-build=esbuild @earendil-works/pi-coding-agent@latest "$@"
+      # Revalidate the latest tag on every launch without delaying new Pi releases.
+      exec pnpm --config.prefer-online=true \
+        --config.minimum-release-age-exclude=@earendil-works/pi-coding-agent \
+        dlx --allow-build=@google/genai --allow-build=protobufjs --allow-build=esbuild \
+        @earendil-works/pi-coding-agent@latest "$@"
     '';
   };
 in
