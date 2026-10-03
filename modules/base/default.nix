@@ -54,8 +54,6 @@
       pkgs.fd
       pkgs.killall
       pkgs.uv
-      pkgs.nodejs
-      pkgs.pnpm
       pkgs.rustup
       pkgs.abduco
     ];

@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    browserRuntime.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     kime.url = "github:riey/kime";
     persway.url = "github:saylesss88/persway";
     waywarp = {

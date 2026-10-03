@@ -7,6 +7,7 @@
   "packages": [
     "npm:@juicesharp/rpiv-ask-user-question",
     "npm:pi-web-access",
+    "npm:pi-agent-browser-native",
     "npm:@narumitw/pi-usage",
     "npm:@narumitw/pi-accounts",
     "npm:pi-subagents",

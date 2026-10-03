@@ -1,11 +1,18 @@
-{ pkgs, username, ... }:
+{
+  pkgs,
+  inputs,
+  username,
+  ...
+}:
 let
+  browserRuntime = inputs.browserRuntime.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+  pnpm = pkgs.pnpm.override { nodejs-slim = browserRuntime.nodejs-slim_24; };
   # Real `pi` binary on the system PATH so non-interactive consumers can
   # spawn pi. TUI mode comes from the `tuiMode` setting so subcommands like
   # `pi update --extensions` keep their argv[0] command word intact.
   pi = pkgs.writeShellApplication {
     name = "pi";
-    runtimeInputs = [ pkgs.pnpm ];
+    runtimeInputs = [ pnpm ];
     text = ''
       # Revalidate the latest tag on every launch without delaying new Pi releases.
       exec pnpm --config.prefer-online=true \
@@ -28,5 +35,12 @@ in
     "d /home/${username}/.pi 0755 ${username} users -"
   ];
 
-  environment.systemPackages = [ pi ];
+  environment.systemPackages = [
+    pi
+    pnpm
+    browserRuntime.nodejs_24
+    browserRuntime.agent-browser
+    pkgs.chromium
+    pkgs.ffmpeg
+  ];
 }
