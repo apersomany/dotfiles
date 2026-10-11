@@ -115,6 +115,7 @@ in
     pkgs.nautilus
     pkgs.nixd
     pkgs.papirus-icon-theme
+    pkgs.remmina
     vesktop
     pkgs.vscode-fhs
     pkgs.wl-clipboard
