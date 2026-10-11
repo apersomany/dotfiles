@@ -17,13 +17,15 @@ in
   # LTS kernel comes from the host config (boot.kernelPackages =
   # pkgs.linuxPackages); here we pin the latest *stable* driver against
   # that kernel. Blackwell requires the open kernel modules.
-  hardware.graphics.enable = true;
-  hardware.enableRedistributableFirmware = true;
-  hardware.nvidia = {
-    open = true;
-    modesetting.enable = true;
-    nvidiaSettings = true;
-    package = config.boot.kernelPackages.nvidiaPackages.stable;
+  hardware = {
+    graphics.enable = true;
+    enableRedistributableFirmware = true;
+    nvidia = {
+      open = true;
+      modesetting.enable = true;
+      nvidiaSettings = true;
+      package = config.boot.kernelPackages.nvidiaPackages.stable;
+    };
   };
   # Cover dynamic loading even when Python bypasses nix-ld, and Triton's
   # supported driver lookup without /sbin/ldconfig. Preserve caller overrides.
