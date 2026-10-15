@@ -6,7 +6,6 @@
   ...
 }:
 let
-  kimePkgs = inputs.kime.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system};
   vesktop = pkgs.vesktop.overrideAttrs (old: {
     postFixup =
       lib.replaceString "--ozone-platform-hint=auto" "--ozone-platform=wayland" old.postFixup
@@ -14,18 +13,7 @@ let
         wrapProgram $out/bin/vesktop --set NIXOS_OZONE_WL 1
       '';
   });
-  kime = inputs.kime.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
-    # Kime still uses the deprecated xorg.libxcb alias.
-    buildInputs = (lib.take 2 old.buildInputs) ++ [ kimePkgs.libxcb ] ++ (lib.drop 3 old.buildInputs);
-    # upstream flake ships a stale cargo vendor hash for its own lock (5c58caf)
-    cargoDeps = pkgs.rustPlatform.fetchCargoVendor {
-      inherit (old) src;
-      hash = "sha256-XbFKh+EwvuQvfNxpKtXVWuzpCKJJy+vKAgZRYjSVMvU=";
-    };
-    postFixup = ''
-      patchelf --add-rpath ${pkgs.wayland}/lib $out/bin/kime-wayland
-    '';
-  });
+  kime = inputs.kime.packages.${pkgs.stdenv.hostPlatform.system}.default;
   persway = inputs.persway.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
     src = pkgs.applyPatches {
       inherit (old) src;
