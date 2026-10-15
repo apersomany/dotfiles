@@ -2,6 +2,23 @@
 
 Declarative NixOS configuration for `workstation`.
 
+## Flake input versions
+
+Declare input sources and tracking branches in `flake.nix`; keep exact revision
+pins exclusively in `flake.lock`. Do not embed release tags or commit revisions
+in input URLs. Inputs without a branch follow the upstream default branch, so
+updates are not restricted to stable releases.
+
+Update one input with:
+
+```bash
+nix flake update herdr
+```
+
+Use `nix flake update` to update all inputs. Review and commit the lockfile diff
+after running the applicable validation gates in `AGENTS.md`. Regenerate patches
+when their pinned inputs change.
+
 ## Osaka WARP bridge
 
 Waywarp instance `0` (alias `osaka`) provides the `waywarp0` bridge link.
