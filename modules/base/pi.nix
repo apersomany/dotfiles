@@ -7,6 +7,18 @@
 let
   browserRuntime = inputs.browserRuntime.legacyPackages.${pkgs.stdenv.hostPlatform.system};
   pnpm = pkgs.pnpm.override { nodejs-slim = browserRuntime.nodejs-slim_24; };
+  claude = pkgs.writeShellApplication {
+    name = "claude";
+    runtimeInputs = [ pnpm ];
+    text = ''
+      # pnpm manages updates instead of Claude's native installer.
+      export DISABLE_AUTOUPDATER=1
+      exec pnpm --config.prefer-online=true \
+        --config.minimum-release-age-exclude=@anthropic-ai/claude-code \
+        dlx --allow-build=@anthropic-ai/claude-code \
+        @anthropic-ai/claude-code@latest "$@"
+    '';
+  };
   # Real `pi` binary on the system PATH so non-interactive consumers can
   # spawn pi. TUI mode comes from the `tuiMode` setting so subcommands like
   # `pi update --extensions` keep their argv[0] command word intact.
@@ -36,6 +48,7 @@ in
   ];
 
   environment.systemPackages = [
+    claude
     pi
     pnpm
     browserRuntime.nodejs_24
