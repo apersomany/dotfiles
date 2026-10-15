@@ -24,6 +24,29 @@ release-binary package and its signed `https://herdr.cachix.org` cache. It track
 stable releases rather than Herdr's development branch. Keep its upstream
 `nixpkgs` pin so the package matches the published cached derivation.
 
+## KakaoTalk through Wine
+
+Launch **KakaoTalk** from the application menu or run `kakaotalk`. The first
+launch downloads Kakao's official non-beta Windows installer and installs it
+into a dedicated 64-bit Wine prefix at
+`${XDG_DATA_HOME:-~/.local/share}/kakaotalk/wine`. Account login and mobile
+device verification are manual. Wine is an unofficial compatibility layer;
+calling, Korean input, and future KakaoTalk updates may have limitations.
+
+To install without launching, or reinstall from a downloaded installer:
+
+```bash
+kakaotalk --install
+kakaotalk --install /path/to/KakaoTalk_Setup.exe
+```
+
+The launcher uses XWayland with the session's existing Kime input method,
+`ko_KR.UTF-8`, and Freesentation font substitutions. It does not change the
+shared `~/.wine` prefix. Installer downloads are cached under
+`${XDG_CACHE_HOME:-~/.cache}/kakaotalk`; account data stays outside the Nix store
+and repository. The launcher and Wine version are declarative, but the Windows
+application is installed and updated in the user-owned prefix.
+
 ## Osaka WARP bridge
 
 Waywarp instance `0` (alias `osaka`) provides the `waywarp0` bridge link.

@@ -25,6 +25,7 @@ in
   imports = [
     ./alacritty.nix
     ./font.nix
+    ./kakaotalk.nix
     ./noctalia.nix
     ./sway.nix
     ./user-dirs.nix

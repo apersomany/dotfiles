@@ -1,0 +1,15 @@
+Windows Registry Editor Version 5.00
+
+[HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\FontSubstitutes]
+"Gulim"="Freesentation"
+"Dotum"="Freesentation"
+"Malgun Gothic"="Freesentation"
+"Tahoma"="Freesentation"
+"MS Shell Dlg"="Freesentation"
+"MS Shell Dlg 2"="Freesentation"
+
+[HKEY_CURRENT_USER\Software\Wine\Fonts\Replacements]
+"Gulim"="Freesentation"
+"Dotum"="Freesentation"
+"Malgun Gothic"="Freesentation"
+"Tahoma"="Freesentation"
