@@ -48,7 +48,7 @@ in
   ];
 
   environment.systemPackages = [
-    inputs.herdr.packages.${pkgs.stdenv.hostPlatform.system}.default
+    inputs.herdr-nix.packages.${pkgs.stdenv.hostPlatform.system}.default
     claude
     pi
     pnpm

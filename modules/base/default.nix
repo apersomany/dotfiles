@@ -14,6 +14,10 @@
         "flakes"
       ];
       auto-optimise-store = true;
+      substituters = [ "https://herdr.cachix.org" ];
+      trusted-public-keys = [
+        "herdr.cachix.org-1:3nH7IStRsS0ASfdonA0DCRR2ZrSCeWitZ7Kwew0cR4I="
+      ];
     };
     gc = {
       automatic = true;

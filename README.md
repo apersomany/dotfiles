@@ -12,12 +12,17 @@ updates are not restricted to stable releases.
 Update one input with:
 
 ```bash
-nix flake update herdr
+nix flake update herdr-nix
 ```
 
 Use `nix flake update` to update all inputs. Review and commit the lockfile diff
 after running the applicable validation gates in `AGENTS.md`. Regenerate patches
 when their pinned inputs change.
+
+Herdr uses the official [herdr-nix](https://github.com/herdrdev/herdr-nix)
+release-binary package and its signed `https://herdr.cachix.org` cache. It tracks
+stable releases rather than Herdr's development branch. Keep its upstream
+`nixpkgs` pin so the package matches the published cached derivation.
 
 ## Osaka WARP bridge
 
