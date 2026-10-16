@@ -41,8 +41,10 @@ kakaotalk --install /path/to/KakaoTalk_Setup.exe
 ```
 
 The launcher uses XWayland with the session's existing Kime input method,
-`ko_KR.UTF-8`, and Freesentation font substitutions. It does not change the
-shared `~/.wine` prefix. Installer downloads are cached under
+`ko_KR.UTF-8`, and Freesentation font substitutions. Wine's standalone tray
+window is disabled; tray icons can still dock in a compatible host tray.
+Registry changes take effect after fully exiting KakaoTalk and its Wine session.
+It does not change the shared `~/.wine` prefix. Installer downloads are cached under
 `${XDG_CACHE_HOME:-~/.cache}/kakaotalk`; account data stays outside the Nix store
 and repository. The launcher and Wine version are declarative, but the Windows
 application is installed and updated in the user-owned prefix.

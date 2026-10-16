@@ -12,7 +12,7 @@ let
       LOCALE_ARCHIVE = "${config.i18n.glibcLocales}/lib/locale/locale-archive";
       LOCALE_ARCHIVE_2_27 = "${config.i18n.glibcLocales}/lib/locale/locale-archive";
       KAKAOTALK_FONTS = "${pkgs.callPackage ./pkgs/freesentation.nix { }}/share/fonts/truetype";
-      KAKAOTALK_FONT_REGISTRY = ../../files/kakaotalk/fonts.reg;
+      KAKAOTALK_REGISTRY = ../../files/kakaotalk/wine.reg;
     };
     text = builtins.readFile ../../files/kakaotalk/launch.sh;
   };

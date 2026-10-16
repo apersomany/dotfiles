@@ -32,7 +32,7 @@ if [[ "${1:-}" == --install || ! -f "$executable" ]]; then
     wineboot --init
     mkdir -p "$WINEPREFIX/drive_c/windows/Fonts"
     ln -sf "$KAKAOTALK_FONTS/"*.ttf "$WINEPREFIX/drive_c/windows/Fonts/"
-    wine regedit /S "$KAKAOTALK_FONT_REGISTRY"
+    wine regedit /S "$KAKAOTALK_REGISTRY"
     # XWayland uses the session's XIM input method, including Kime.
     wine reg add 'HKCU\Software\Wine\Drivers' /v Graphics /d x11 /f
     wine "$installer" /S
@@ -50,5 +50,7 @@ if [[ "${1:-}" == --install || ! -f "$executable" ]]; then
   fi
 fi
 
+# Apply prefix settings on every launch so existing installations receive updates.
+wine regedit /S "$KAKAOTALK_REGISTRY"
 cd "$(dirname "$executable")"
 exec wine "$executable" "$@"
