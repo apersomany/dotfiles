@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   programs.sway = {
     enable = true;
@@ -18,14 +18,19 @@
   };
 
   # Session-wide rather than sway-only, so apps started by systemd user
-  # services (the Noctalia launcher) or D-Bus activation also get them. Both
-  # fall back to X11 when no Wayland display is available.
+  # services (the Noctalia launcher) or D-Bus activation also get them. Ozone
+  # and Qt fall back to X11 when no Wayland display is available. The kime
+  # module exports its variables only to login shells; KakaoTalk under
+  # XWayland needs XMODIFIERS.
   environment.sessionVariables = {
     NIXOS_OZONE_WL = "1";
     QT_QPA_PLATFORM = "wayland;xcb";
     QT_QPA_PLATFORMTHEME = "gtk3";
     XCURSOR_THEME = "Bibata-Modern-Ice";
     XCURSOR_SIZE = "24";
+    GTK_IM_MODULE = config.i18n.inputMethod.type;
+    QT_IM_MODULE = config.i18n.inputMethod.type;
+    XMODIFIERS = "@im=${config.i18n.inputMethod.type}";
   };
 
   environment.etc = {
