@@ -67,6 +67,7 @@
       pkgs.abduco
     ];
 
+    # For binaries not built by Nix, which look for distribution CA paths.
     variables.SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
   };
 
