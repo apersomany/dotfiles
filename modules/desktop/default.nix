@@ -71,8 +71,6 @@ in
   # to their only handler, and ~/.config/mimeapps.list still takes precedence.
   environment.etc."xdg/mimeapps.list".source = ../../files/mimeapps.list;
 
-  virtualisation.waydroid.enable = true;
-
   security.polkit.extraConfig = ''
     polkit.addRule(function(action, subject) {
       if (

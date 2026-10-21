@@ -3,6 +3,15 @@
   programs.sway = {
     enable = true;
     wrapperFeatures.gtk = true;
+    # The module's defaults minus foot; Alacritty is the terminal.
+    extraPackages = [
+      pkgs.brightnessctl
+      pkgs.grim
+      pkgs.pulseaudio
+      pkgs.swayidle
+      pkgs.swaylock
+      pkgs.wmenu
+    ];
     extraSessionCommands = ''
       export XDG_SESSION_TYPE=wayland
     '';
