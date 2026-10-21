@@ -57,8 +57,6 @@ in
     pi
     pnpm
     pkgs.nodejs_24
-    pkgs.agent-browser
-    pkgs.chromium
     pkgs.ffmpeg
   ];
 }
