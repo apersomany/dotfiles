@@ -1,0 +1,56 @@
+if (( EUID != 0 )) || [[ ! ${SUDO_UID:-} =~ ^[0-9]+$ ]] || (( SUDO_UID == 0 )); then
+  echo "brave-waywarp-enter must be invoked through sudo by a regular user." >&2
+  exit 1
+fi
+
+host_interface=$(ip -o link show dev waywarp0 2>/dev/null) || {
+  echo "waywarp0 is not running; start the root Waywarp bridge instance 0 first." >&2
+  exit 1
+}
+host_index=${host_interface%%:*}
+resolver_identity=$(stat -Lc '%d:%i' /run/waywarp/0/resolv.conf 2>/dev/null) || {
+  echo "The root Waywarp instance 0 has no resolver configuration." >&2
+  exit 1
+}
+
+# Waywarp keeps anonymous namespaces; its daemon's resolver mount identifies instance 0.
+namespace_pid=""
+mapfile -t process_ids < <(pgrep -f '/bin/warp-svc$' || true)
+for process_id in "${process_ids[@]}"; do
+  process_resolver=$(stat -Lc '%d:%i' "/proc/$process_id/root/etc/resolv.conf" 2>/dev/null) || continue
+  [[ "$process_resolver" == "$resolver_identity" ]] || continue
+  peer_interface=$(nsenter --target "$process_id" --net ip -o link show dev veth 2>/dev/null) || continue
+  [[ "$peer_interface" == *"veth@if$host_index:"* ]] || continue
+  namespace_pid=$process_id
+  break
+done
+if [[ -z "$namespace_pid" ]]; then
+  echo "Cannot find the WARP daemon in the namespace behind waywarp0; refusing host-network launch." >&2
+  exit 1
+fi
+
+browser=$1
+shift
+profile="${XDG_CONFIG_HOME:-$HOME/.config}/BraveSoftware/Brave-Browser"
+arguments=("$@")
+for ((index = 0; index < ${#arguments[@]}; index++)); do
+  case "${arguments[index]}" in
+    --user-data-dir=*) profile=${arguments[index]#--user-data-dir=} ;;
+    --user-data-dir) profile=${arguments[index + 1]:?Missing user-data directory} ;;
+  esac
+done
+singleton_lock=$(readlink -- "$profile/SingletonLock" 2>/dev/null || true)
+existing_pid=${singleton_lock##*-}
+if [[ "$existing_pid" =~ ^[0-9]+$ ]] && [[ -e "/proc/$existing_pid/ns/net" ]]; then
+  existing_network=$(readlink "/proc/$existing_pid/ns/net")
+  target_network=$(readlink "/proc/$namespace_pid/ns/net")
+  if [[ "$existing_network" != "$target_network" ]]; then
+    echo "Close the existing Brave session first: this profile is open in a different network namespace." >&2
+    exit 1
+  fi
+fi
+
+exec nsenter --target "$namespace_pid" --net --mount \
+  setpriv --reuid="$SUDO_UID" --regid="$SUDO_GID" --init-groups \
+  env -u SUDO_UID -u SUDO_GID -u SUDO_USER \
+  "$browser" "$@"

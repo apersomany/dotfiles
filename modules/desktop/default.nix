@@ -68,6 +68,7 @@ in
   environment.systemPackages = [
     pkgs.alacritty
     pkgs.alacritty.terminfo
+    pkgs.brave
     pkgs.brightnessctl
     pkgs.celluloid
     pkgs.firefox

@@ -88,6 +88,11 @@ journalctl -u waywarp-osaka.service
 sudo curl --interface waywarp0 https://www.cloudflare.com/cdn-cgi/trace
 ```
 
+**Brave (Waywarp)**, or `brave-waywarp`, runs Brave as your user inside the
+namespace behind `waywarp0`, with WARP's DNS. It shares the regular Brave
+profile, so close any regular Brave session first. It refuses to start if it
+can't find the instance, rather than falling back to the host network.
+
 ### `zero-trust` (workstation)
 
 Instance `1` replaces the official Cloudflare client on workstation;
