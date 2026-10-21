@@ -18,7 +18,7 @@ Run only the gates applicable to changed files:
 
 | Change | Commands |
 | --- | --- |
-| Nix (`flake.nix`, `hosts/`, `modules/`) | `statix check . && deadnix .`, `nix fmt -- <changed Nix paths>`, then `nh os build .` |
+| Nix (`flake.nix`, `hosts/`, `modules/`) | `nix fmt -- <changed Nix paths>`, then `nix flake check` (lint, formatting, and every host build) |
 | Sway (`files/sway/config`) | `sway -C -c files/sway/config` |
 | Documentation or other text | `git diff --check` |
 

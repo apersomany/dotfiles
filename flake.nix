@@ -60,6 +60,34 @@
         '';
       };
 
+      checks.x86_64-linux = {
+        lint =
+          pkgs.runCommand "lint"
+            {
+              nativeBuildInputs = [
+                pkgs.statix
+                pkgs.deadnix
+              ];
+            }
+            ''
+              cd ${self}
+              statix check .
+              deadnix --fail .
+              touch $out
+            '';
+
+        format = pkgs.runCommand "format" { nativeBuildInputs = [ self.formatter.x86_64-linux ]; } ''
+          cp -r ${self} src
+          chmod -R u+w src
+          cd src
+          HOME=$TMPDIR treefmt --ci
+          touch $out
+        '';
+      }
+      // nixpkgs.lib.mapAttrs' (
+        name: host: nixpkgs.lib.nameValuePair "host-${name}" host.config.system.build.toplevel
+      ) self.nixosConfigurations;
+
       devShells.x86_64-linux.default = pkgs.mkShell {
         packages = [
           pkgs.statix
