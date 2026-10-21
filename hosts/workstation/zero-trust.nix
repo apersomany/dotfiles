@@ -23,10 +23,6 @@ in
   # imported once with `sudo waywarp import 1`. Routes and DNS follow the
   # registration's policy; restart the service after changing the device
   # profile in the Cloudflare dashboard.
-  #
-  # Known issue: while this instance runs, the host's /etc/resolv.conf gets
-  # replaced with WARP's private one, breaking non-nss resolvers
-  # (https://github.com/apersomany/waywarp/issues/2).
   services.waywarp.instances.zero-trust = {
     index = 1;
     access.bridge = { };

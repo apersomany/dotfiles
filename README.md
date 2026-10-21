@@ -104,12 +104,6 @@ following on `waywarp1`:
 systemd-resolved handles host DNS. Restart `waywarp-zero-trust.service` after
 changing the device profile in the Cloudflare dashboard.
 
-**Known issue:** while this instance runs, the host's `/etc/resolv.conf` gets
-replaced with WARP's private copy, which breaks programs that read it directly
-([waywarp#2](https://github.com/apersomany/waywarp/issues/2)). Until that's
-fixed, switching workstation to this configuration breaks DNS for those
-programs.
-
 ## KakaoTalk through Wine
 
 Launch **KakaoTalk** from the application menu or run `kakaotalk`. The first

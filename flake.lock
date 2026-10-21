@@ -652,11 +652,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792056990,
-        "narHash": "sha256-3sA6CKqcjKzoOq9sT+phHxpDWDmjHer7kDUaU13tIqI=",
+        "lastModified": 1792589845,
+        "narHash": "sha256-AMWg5srdb6omPWhcj21G/XD9pI28BINhJdzBSpib920=",
         "owner": "apersomany",
         "repo": "waywarp",
-        "rev": "d85fa8251eb494eb6b128bbca4d6d83b42615498",
+        "rev": "3087ed40ca61e2604bbb67c2d875f8d832e89ae2",
         "type": "github"
       },
       "original": {
