@@ -1,33 +1,30 @@
-# NixOS workstation configuration
+# NixOS configuration
 
-This flake configures every host under `hosts/` (currently `workstation` and `scg-workstation`); shared configuration lives in `modules/`. Implement requested changes, validate them, activate system changes, commit, and push directly.
+This flake configures every host under `hosts/`. Shared modules live in `modules/`, application config files in `files/`, and encrypted secrets in `secrets/`. Implement requested changes, validate them, activate them, commit, and push.
 
-## Boundaries
+## Rules
 
-- Keep `AGENTS.md` repository-specific. `.pi/agent/APPEND_SYSTEM.md` is exposed as the global Pi prompt overlay at `~/.pi/agent/APPEND_SYSTEM.md`; keep only cross-project rules there.
+- Keep this file repository-specific. Cross-project rules belong in `.pi/agent/APPEND_SYSTEM.md`, which is the global Pi prompt overlay.
 - Do not introduce home-manager. Install packages through `environment.systemPackages`.
-- Use explicit `pkgs.` and `lib.` references; never use `with pkgs;` or `with lib;`.
-- Define user-specific values only in the `flake.nix` `let` block.
-- Keep application configuration as plain files under `files/`, not Nix string literals. Link read-only user configuration with `dotfiles.userFiles`.
-- Keep patches aligned with the revisions pinned in `flake.lock`; regenerate them when their input changes.
+- Use explicit `pkgs.` and `lib.` references, never `with pkgs;` or `with lib;`.
+- Define user-specific values only in the `let` block of `flake.nix`.
+- Keep application configuration as plain files under `files/`, not Nix string literals. Link read-only user config with `dotfiles.userFiles`.
+- Keep patches matched to the revisions in `flake.lock`; regenerate them when their input changes.
 - Work on `master`.
 
 ## Validation
 
-Run only the gates applicable to changed files:
-
-| Change | Commands |
+| Change | Gate |
 | --- | --- |
-| Nix (`flake.nix`, `hosts/`, `modules/`) | `nix fmt -- <changed Nix paths>`, then `nix flake check` (lint, formatting, and every host build) |
-| Sway (`files/sway/config`) | `sway -C -c files/sway/config` |
-| Documentation or other text | `git diff --check` |
+| Anything Nix builds (`flake.nix`, `hosts/`, `modules/`, files they read) | `nix fmt -- <changed paths>`, then `nix flake check` |
+| `files/sway/config` | `sway -C -c files/sway/config` |
+| Other text | `git diff --check` |
 
-Treat lint warnings and warnings from this repository during `nix flake check` as failures. Upstream nixpkgs deprecation warnings are acceptable. Fix task-caused failures at the source and rerun the failed gate; report unrelated failures without modifying them.
+`nix flake check` lints, checks formatting, and builds every host. Treat warnings from this repository as failures; upstream nixpkgs deprecation warnings are fine. Fix failures you caused and rerun the gate. Report unrelated failures without changing them.
 
 ## Delivery
 
-- Preserve unrelated work. Never stash, reset, clean, overwrite, stage, or commit changes outside the current task.
-- Assume unrecognized uncommitted changes were made by the user and commit them as part of delivery.
-- Keep each commit to one logical concern and use a conventional-commit prefix.
-- After validation, run `nh os switch .` for system configuration changes. It activates only the host it runs on; activate other hosts only when the user asks. Do not activate unrelated uncommitted Nix changes without user approval.
-- Push each successful commit to `master` unless the user explicitly requests review-only, dry-run, or WIP work.
+- Treat unrecognized uncommitted changes as the user's. Never stash, reset, clean, or overwrite them; commit them separately from your own work.
+- Keep each commit to one logical concern, with a conventional-commit prefix.
+- After validating a system change, run `nh os switch .`. It activates only the current host; touch other hosts only when asked. If activation reports failed units, nh does not add the generation to the bootloader, so fix the cause and switch again.
+- Push each commit to `master` unless the user asks for review-only, dry-run, or WIP work.

@@ -1,74 +1,86 @@
-# Workstation configuration
+# NixOS configuration
 
-Declarative NixOS configuration for the hosts under `hosts/`.
+Declarative NixOS configuration for every host under `hosts/`.
 
-## Flake input versions
+| Path | Contents |
+| --- | --- |
+| `hosts/<name>/` | Per-host configuration and hardware |
+| `modules/` | Shared modules: `base`, `desktop`, `drivers`, `waywarp.nix` |
+| `files/` | Plain application config files read by the modules |
+| `secrets/` | sops-encrypted secrets |
+| `patches/` | Patches for flake inputs |
 
-Declare input sources and tracking branches in `flake.nix`; keep exact revision
-pins exclusively in `flake.lock`. Do not embed release tags or commit revisions
-in input URLs. Inputs without a branch follow the upstream default branch, so
-updates are not restricted to stable releases.
+Run `nix flake check` to lint, check formatting, and build every host, and
+`nh os switch .` to activate the current host.
 
-Update one input with:
+## Flake inputs
 
-```bash
-nix flake update herdr-nix
-```
-
-Use `nix flake update` to update all inputs. Review and commit the lockfile diff
-after running the applicable validation gates in `AGENTS.md`. Regenerate patches
-when their pinned inputs change.
-
-Herdr uses the official [herdr-nix](https://github.com/herdrdev/herdr-nix)
-release-binary package and its signed `https://herdr.cachix.org` cache. It tracks
-stable releases rather than Herdr's development branch. Keep its upstream
-`nixpkgs` pin so the package matches the published cached derivation.
-
-## KakaoTalk through Wine
-
-Launch **KakaoTalk** from the application menu or run `kakaotalk`. The first
-launch downloads Kakao's official non-beta Windows installer and installs it
-into a dedicated 64-bit Wine prefix at
-`${XDG_DATA_HOME:-~/.local/share}/kakaotalk/wine`. Account login and mobile
-device verification are manual. Wine is an unofficial compatibility layer;
-calling, Korean input, and future KakaoTalk updates may have limitations.
-
-To install without launching, or reinstall from a downloaded installer:
+`flake.nix` declares sources and branches; exact revisions live only in
+`flake.lock`. Don't put tags or revisions in input URLs. Inputs without a branch
+follow the upstream default branch.
 
 ```bash
-kakaotalk --install
-kakaotalk --install /path/to/KakaoTalk_Setup.exe
+nix flake update herdr-nix   # one input
+nix flake update             # all inputs
 ```
 
-The launcher uses XWayland with the session's existing Kime input method,
-`ko_KR.UTF-8`, and Freesentation font substitutions. Wine's standalone tray
-window is disabled; tray icons can still dock in a compatible host tray.
-Registry changes take effect after fully exiting KakaoTalk and its Wine session.
-It does not change the shared `~/.wine` prefix. Installer downloads are cached under
-`${XDG_CACHE_HOME:-~/.cache}/kakaotalk`; account data stays outside the Nix store
-and repository. The launcher and Wine version are declarative, but the Windows
-application is installed and updated in the user-owned prefix.
+Review the lockfile diff, run `nix flake check`, and regenerate any patch whose
+input changed.
 
-## Osaka WARP bridge
+Herdr comes from [herdr-nix](https://github.com/herdrdev/herdr-nix)'s
+release binaries and its signed `https://herdr.cachix.org` cache. It tracks
+stable releases. Keep herdr-nix's own `nixpkgs` pin so the package matches the
+cached derivation.
 
-Waywarp instance `0` (alias `osaka`) provides the `waywarp0` bridge link.
-It bootstraps through Osaka Azure Mudfish relays and requires
-`geo4=JP/Osaka+edge=KIX`: a public IPv4 address advertised in Osaka and a KIX
-tunnel endpoint. This does not guarantee every destination exits through KIX
-or that IPv6 is geolocated in Osaka.
+## Secrets
 
-Both hosts run it. The Mudfish credentials live in the sops-encrypted
-`secrets/waywarp-mudfish.env` (systemd environment-file syntax) and are
-decrypted to `/run/secrets/waywarp-mudfish` during activation. Edit them with
-`sops secrets/waywarp-mudfish.env`; quote values according to systemd
-environment-file syntax, especially passwords containing quotes or backslashes.
+Secrets under `secrets/` are encrypted with
+[sops-nix](https://github.com/Mic92/sops-nix). `.sops.yaml` lists the
+recipients:
 
-If the host cannot decrypt the secret, systemd skips `waywarp-osaka.service`
-before starting Waywarp. It does not fail the service or prevent boot. The
-bridge does not replace the host's default route or DNS, and nothing is
-configured to require it. Traffic explicitly routed through or bound to
-`waywarp0` cannot use it while it is stopped. The service restarts whenever the
-secret changes. Check it with:
+- the admin age key, kept at `~/.config/sops/age/keys.txt` and backed up off
+  this machine
+- each host's SSH host key, converted to age
+
+Hosts decrypt with `/etc/ssh/ssh_host_ed25519_key`, so the admin key is only
+needed for editing. Use secrets only for optional services, so that a host that
+can't decrypt them still boots.
+
+To bootstrap a new or reinstalled host:
+
+1. Install NixOS and switch to this flake. Secrets fail to decrypt and the
+   services that need them are skipped.
+2. On a machine with the admin key, add the host's age key to `.sops.yaml`,
+   removing its old key after a reinstall, then re-encrypt, commit, and push:
+
+   ```bash
+   ssh-keyscan -t ed25519 <host> | ssh-to-age
+   sops updatekeys secrets/*
+   ```
+
+3. Pull and run `nh os switch .` on the new host.
+
+## Waywarp
+
+[Waywarp](https://github.com/apersomany/waywarp) runs WARP instances as bridge
+links. Neither instance changes the host's default route.
+
+### `osaka` (both hosts)
+
+Instance `0` provides `waywarp0`. It bootstraps through Osaka Azure Mudfish
+relays and requires `geo4=JP/Osaka+edge=KIX`: a public IPv4 address advertised
+in Osaka and a KIX tunnel endpoint. Some destinations or IPv6 traffic may still
+exit elsewhere.
+
+The Mudfish credentials are in `secrets/waywarp-mudfish.env` (edit with
+`sops secrets/waywarp-mudfish.env`). They use systemd environment-file syntax,
+so quote values that contain quotes or backslashes. They're decrypted to
+`/run/secrets/waywarp-mudfish`. If the host can't decrypt them, the service is
+skipped without affecting boot. The service restarts whenever the secret
+changes.
+
+Nothing routes through `waywarp0` by default. Bind to it or add routes, since
+bridge mode has no proxy listener:
 
 ```bash
 sudo waywarp status 0
@@ -76,30 +88,44 @@ journalctl -u waywarp-osaka.service
 sudo curl --interface waywarp0 https://www.cloudflare.com/cdn-cgi/trace
 ```
 
-Use interface-bound requests as above or add explicit destination routes to
-reach WARP; no SOCKS5/HTTP proxy listener is provided in bridge mode. The
-existing host Cloudflare WARP configuration is independent and unchanged.
+### `zero-trust` (workstation)
 
-## Secrets
+Instance `1` replaces the official Cloudflare client on workstation;
+scg-workstation still runs the official client. It uses a copy of the Zero Trust
+registration, imported once with `sudo waywarp import 1`. At startup,
+`files/waywarp/zero-trust` reads the registration's policy and sets up the
+following on `waywarp1`:
 
-Secrets under `secrets/` are encrypted with [sops-nix](https://github.com/Mic92/sops-nix).
-`.sops.yaml` lists the recipients: the admin age key
-(`~/.config/sops/age/keys.txt`, backed up outside this machine) and each host's
-SSH host key converted to age. Hosts decrypt with
-`/etc/ssh/ssh_host_ed25519_key`, so the admin key never needs to be on a host
-that only consumes secrets. Secrets must only gate optional services.
+- the split-tunnel routes
+- Gateway DNS over TLS
+- DNS delegates for fallback domains that have their own resolvers, such as
+  `home.arpa`
 
-To bootstrap a new or reinstalled host:
+systemd-resolved handles host DNS. Restart `waywarp-zero-trust.service` after
+changing the device profile in the Cloudflare dashboard.
 
-1. Install NixOS and switch to this flake. Secrets fail to decrypt, but the
-   system boots and services that need them are skipped.
-2. On a machine with the admin key, derive the host's age key and add it to
-   `.sops.yaml`, then re-encrypt, commit, and push:
+**Known issue:** while this instance runs, the host's `/etc/resolv.conf` gets
+replaced with WARP's private copy, which breaks programs that read it directly
+([waywarp#2](https://github.com/apersomany/waywarp/issues/2)). Until that's
+fixed, switching workstation to this configuration breaks DNS for those
+programs.
 
-   ```bash
-   ssh-keyscan -t ed25519 <host> | ssh-to-age
-   sops updatekeys secrets/*
-   ```
+## KakaoTalk through Wine
 
-   Remove the host's previous key if it was reinstalled.
-3. Pull and run `nh os switch .` on the new host.
+Launch **KakaoTalk** from the application menu or run `kakaotalk`. The first
+launch downloads Kakao's official Windows installer into a dedicated 64-bit Wine
+prefix at `${XDG_DATA_HOME:-~/.local/share}/kakaotalk/wine`. Login and device
+verification are manual. Wine is unofficial, so calls, Korean input, and future
+updates may not work fully.
+
+```bash
+kakaotalk --install                            # install without launching
+kakaotalk --install /path/to/KakaoTalk_Setup.exe
+```
+
+The launcher uses XWayland, Kime, `ko_KR.UTF-8`, and Freesentation font
+substitutions. Wine's standalone tray window is disabled; tray icons still dock
+in a compatible host tray. Registry changes apply after KakaoTalk and its Wine
+session fully exit. The shared `~/.wine` prefix is untouched. Installers are
+cached in `${XDG_CACHE_HOME:-~/.cache}/kakaotalk`. The launcher and Wine are
+declarative; KakaoTalk itself installs and updates inside the prefix.
