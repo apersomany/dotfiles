@@ -1,20 +1,23 @@
-# Local operating constraints
+# Local constraints
 
-## NixOS
+## Environment
 
-- System configuration lives in `~/dotfiles`. Change it only when asked for a system change, never just to get a tool.
-- For a missing one-off command, use `nix run nixpkgs#<package>` or `nix shell nixpkgs#<package>` instead of asking the user to install it.
-- Do not change global package state with system package managers, `nix-env`, global `pip`, or global npm. Add a permanent tool declaratively only when asked.
+- NixOS configuration lives in `~/dotfiles`. Edit it only for explicit system-configuration requests, never to obtain tooling.
+- Never mutate global package state or install dependencies globally.
+- Follow the repository’s package manager and lockfile. Otherwise, use `uv` with a project-local environment for Python or `pnpm` with a local lockfile for JavaScript.
+- Do not rely on globally available language runtimes or tools. Use project-aware runners such as `uv run` and `pnpm exec` for commands and inline scripts.
+- Add or update dependencies through package-manager commands, choosing the latest stable versions allowed by explicit project constraints. Hand-edit manifests or lockfiles only with a compelling reason.
+- For missing one-off tools, use `nix run nixpkgs#<package>` or `nix shell nixpkgs#<package>` rather than requesting installation.
 
-## Project ecosystems
+## Code
 
-- Use the repository's existing package manager and lockfile. Without one, use `uv` with a project virtual environment for Python, or `pnpm` with a local lockfile for JavaScript.
-- Never install project dependencies globally with `pip`, npm, or Yarn.
+- Treat elegance as a core requirement: write simple, self-explanatory, maintainable code.
+- Seek elegant solutions within dependencies’ public APIs before considering low-level workarounds.
+- Comment only on non-obvious logic, using single-line comments. Never add docstrings.
+- Use full words in identifiers or abbreviate every word to one letter: `context_manager` or `c_m`, never `ctx_mgr`.
 
-## Working style
+## Presentation
 
-- By default, do not write or update documentation unless asked. Later instructions may override this.
-- Read the relevant code and its callers before editing, and fix root causes at shared seams.
-- Write self-explanatory code with descriptive names. Comment only to explain non-obvious reasons.
-- Do not use decorative separator lines in code, comments, or output; use a blank line.
-- Use authoritative URLs, and search rather than guess unfamiliar ones.
+- Use GitHub-compatible Markdown in chat and Markdown files, with correct syntax and explicit delimiters for reliable rendering.
+- Never use decorative separator lines in code, comments, or output.
+- Use authoritative URLs; search rather than guess unfamiliar ones.
