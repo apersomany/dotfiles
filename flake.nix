@@ -46,8 +46,7 @@
         };
     in
     {
-      nixosConfigurations.workstation = mkHost "workstation";
-      nixosConfigurations.scg-workstation = mkHost "scg-workstation";
+      nixosConfigurations = nixpkgs.lib.genAttrs (builtins.attrNames (builtins.readDir ./hosts)) mkHost;
 
       formatter.x86_64-linux = pkgs.writeShellApplication {
         name = "treefmt";

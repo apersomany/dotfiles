@@ -29,6 +29,7 @@
   security.sudo.wheelNeedsPassword = false;
 
   imports = [
+    ./boot.nix
     ./pi.nix
   ];
 

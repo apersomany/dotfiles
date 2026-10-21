@@ -1,6 +1,6 @@
 # Workstation configuration
 
-Declarative NixOS configuration for `workstation`.
+Declarative NixOS configuration for the hosts under `hosts/`.
 
 ## Flake input versions
 

@@ -1,6 +1,6 @@
 # NixOS workstation configuration
 
-This flake configures the single host `workstation`. Implement requested changes, validate them, activate system changes, commit, and push directly.
+This flake configures every host under `hosts/` (currently `workstation` and `scg-workstation`); shared configuration lives in `modules/`. Implement requested changes, validate them, activate system changes, commit, and push directly.
 
 ## Boundaries
 
@@ -22,12 +22,12 @@ Run only the gates applicable to changed files:
 | Sway (`files/sway/config`) | `sway -C -c files/sway/config` |
 | Documentation or other text | `git diff --check` |
 
-Treat lint warnings and warnings from this repository during `nh os build` as failures. Upstream nixpkgs deprecation warnings are acceptable. Fix task-caused failures at the source and rerun the failed gate; report unrelated failures without modifying them.
+Treat lint warnings and warnings from this repository during `nix flake check` as failures. Upstream nixpkgs deprecation warnings are acceptable. Fix task-caused failures at the source and rerun the failed gate; report unrelated failures without modifying them.
 
 ## Delivery
 
 - Preserve unrelated work. Never stash, reset, clean, overwrite, stage, or commit changes outside the current task.
 - Assume unrecognized uncommitted changes were made by the user and commit them as part of delivery.
 - Keep each commit to one logical concern and use a conventional-commit prefix.
-- After validation, run `nh os switch .` for system configuration changes. Do not activate unrelated uncommitted Nix changes without user approval.
+- After validation, run `nh os switch .` for system configuration changes. It activates only the host it runs on; activate other hosts only when the user asks. Do not activate unrelated uncommitted Nix changes without user approval.
 - Push each successful commit to `master` unless the user explicitly requests review-only, dry-run, or WIP work.
