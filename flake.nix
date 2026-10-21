@@ -4,8 +4,14 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     herdr-nix.url = "github:herdrdev/herdr-nix";
-    kime.url = "github:riey/kime";
-    persway.url = "github:saylesss88/persway";
+    kime = {
+      url = "github:riey/kime";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    persway = {
+      url = "github:saylesss88/persway";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     waywarp = {
       url = "github:apersomany/waywarp";
       inputs.nixpkgs.follows = "nixpkgs";
