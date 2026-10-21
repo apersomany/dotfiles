@@ -12,9 +12,6 @@
       pkgs.swaylock
       pkgs.wmenu
     ];
-    extraSessionCommands = ''
-      export XDG_SESSION_TYPE=wayland
-    '';
   };
 
   # Session-wide so apps started by systemd user services, such as the
