@@ -1,7 +1,3 @@
-# Generated for scg-workstation (SAMSUNG MZVL21T0HCLR 1TB, btrfs).
-# Mirrors `nixos-generate-config --root /mnt` output for UUIDs
-# 5bf40ce6-75c8-4141-82cc-8b955da82372 (nixos) and 7718-4526 (BOOT),
-# plus compress/ssd/noatime tuning.
 {
   config,
   lib,
@@ -24,10 +20,7 @@
         "sd_mod"
       ];
       kernelModules = [ ];
-      # btrfs lives in initrd for /nix mount.
-      supportedFilesystems = [ "btrfs" ];
     };
-    supportedFilesystems = [ "btrfs" ];
     kernelModules = [ "kvm-amd" ];
     extraModulePackages = [ ];
   };

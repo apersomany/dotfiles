@@ -4,6 +4,5 @@ Host scg-workstation.home.arpa
   IdentitiesOnly yes
 
 Host *
-  # alacritty's terminfo is missing on most remote hosts, so send a TERM that exists everywhere
-  UserKnownHostsFile ~/.ssh/known_hosts
+  # Most remote hosts lack Alacritty's terminfo.
   SetEnv TERM=xterm-256color

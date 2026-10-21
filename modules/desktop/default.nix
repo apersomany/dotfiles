@@ -6,13 +6,6 @@
   ...
 }:
 let
-  vesktop = pkgs.vesktop.overrideAttrs (old: {
-    postFixup =
-      lib.replaceString "--ozone-platform-hint=auto" "--ozone-platform=wayland" old.postFixup
-      + ''
-        wrapProgram $out/bin/vesktop --set NIXOS_OZONE_WL 1
-      '';
-  });
   kime = inputs.kime.packages.${pkgs.stdenv.hostPlatform.system}.default;
   persway = inputs.persway.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
     src = pkgs.applyPatches {
@@ -111,7 +104,7 @@ in
     pkgs.nixd
     pkgs.papirus-icon-theme
     pkgs.remmina
-    vesktop
+    pkgs.vesktop
     pkgs.vscode-fhs
     pkgs.wl-clipboard
     persway

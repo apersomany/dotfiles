@@ -75,13 +75,7 @@
       nix-direnv.enable = true;
     };
 
-    nix-ld = {
-      enable = true;
-      libraries = [
-        pkgs.stdenv.cc.cc
-        pkgs.zlib
-      ];
-    };
+    nix-ld.enable = true;
 
     bash = {
       promptInit = ''
@@ -93,10 +87,6 @@
 
         if command -v gh &>/dev/null; then
           export GITHUB_TOKEN="$(gh auth token 2>/dev/null)"
-        fi
-
-        if command -v devenv &>/dev/null; then
-          eval "$(devenv hook bash)"
         fi
       '';
     };
