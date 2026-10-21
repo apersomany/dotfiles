@@ -19,29 +19,25 @@ let
   };
 in
 {
-  # Replaces the official client with a Waywarp copy of its Team registration,
-  # imported once with `sudo waywarp import 1`. Routes and DNS follow the
-  # registration's policy; restart the service after changing the device
-  # profile in the Cloudflare dashboard.
+  # Uses a copy of the Team registration, imported once with
+  # `sudo waywarp import 1`.
   services.waywarp.instances.zero-trust = {
     index = 1;
     access.bridge = { };
   };
 
-  # Readiness is reported once WARP is connected.
+  # Runs once WARP is connected.
   systemd.services.waywarp-zero-trust.serviceConfig = {
     ExecStartPost = "${lib.getExe zeroTrust} up ${toString instance.index}";
     ExecStopPost = "${lib.getExe zeroTrust} down ${toString instance.index}";
   };
 
-  # Gateway is configured on the bridge link at runtime. Without global
-  # servers, resolved uses its built-in fallback while the instance is down.
+  # Gateway DNS is set on the bridge link at runtime.
   services.resolved = {
     enable = true;
     settings.Resolve.DNS = [ ];
   };
 
-  # resolved defaults NetworkManager to pushing DHCP resolvers, which would
-  # bypass Gateway; keep NetworkManager out of DNS entirely.
+  # Otherwise NetworkManager pushes DHCP resolvers that bypass Gateway.
   networking.networkmanager.dns = lib.mkForce "none";
 }

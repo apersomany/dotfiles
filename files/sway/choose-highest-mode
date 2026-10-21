@@ -19,9 +19,7 @@ choose_modes() {
 }
 
 choose_modes
-# Self-healing loop: a sway reload drops IPC subscriptions, which ends the
-# subscribe pipe below. Without this loop the script would exit there and
-# outputs would stay at 60Hz until next login - reconnect and re-apply.
+# A sway reload ends the subscription, so resubscribe.
 while true; do
     choose_modes
     swaymsg -t subscribe '["output"]' |
