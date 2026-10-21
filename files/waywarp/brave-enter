@@ -8,17 +8,12 @@ host_interface=$(ip -o link show dev waywarp0 2>/dev/null) || {
   exit 1
 }
 host_index=${host_interface%%:*}
-resolver_identity=$(stat -Lc '%d:%i' /run/waywarp/0/resolv.conf 2>/dev/null) || {
-  echo "The root Waywarp instance 0 has no resolver configuration." >&2
-  exit 1
-}
 
-# Waywarp keeps anonymous namespaces; its daemon's resolver mount identifies instance 0.
+# Waywarp keeps anonymous namespaces; the daemon whose veth peers with waywarp0
+# belongs to instance 0.
 namespace_pid=""
 mapfile -t process_ids < <(pgrep -f '/bin/warp-svc$' || true)
 for process_id in "${process_ids[@]}"; do
-  process_resolver=$(stat -Lc '%d:%i' "/proc/$process_id/root/etc/resolv.conf" 2>/dev/null) || continue
-  [[ "$process_resolver" == "$resolver_identity" ]] || continue
   peer_interface=$(nsenter --target "$process_id" --net ip -o link show dev veth 2>/dev/null) || continue
   [[ "$peer_interface" == *"veth@if$host_index:"* ]] || continue
   namespace_pid=$process_id
