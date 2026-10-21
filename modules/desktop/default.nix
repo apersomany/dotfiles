@@ -66,6 +66,11 @@ in
 
   xdg.portal.wlr.enable = true;
 
+  # Defaults for types more than one installed app claims; without them GIO
+  # picks Chromium (from Pi's browser runtime) or VS Code. Other types resolve
+  # to their only handler, and ~/.config/mimeapps.list still takes precedence.
+  environment.etc."xdg/mimeapps.list".source = ../../files/mimeapps.list;
+
   virtualisation.waydroid.enable = true;
 
   security.polkit.extraConfig = ''
