@@ -4,15 +4,19 @@
     enable = true;
     wrapperFeatures.gtk = true;
     extraSessionCommands = ''
-      export NIXOS_OZONE_WL=1
-      export MOZ_ENABLE_WAYLAND=1
-      export QT_QPA_PLATFORM=wayland
-      export QT_QPA_PLATFORMTHEME=gtk3
       export XDG_SESSION_TYPE=wayland
-      export XCURSOR_THEME=Bibata-Modern-Ice
-      export XCURSOR_SIZE=24
-      export XCURSOR_PATH="/run/current-system/sw/share/icons:~/.local/share/icons:~/.icons:/usr/share/icons"
     '';
+  };
+
+  # Session-wide rather than sway-only, so apps started by systemd user
+  # services (the Noctalia launcher) or D-Bus activation also get them. Both
+  # fall back to X11 when no Wayland display is available.
+  environment.sessionVariables = {
+    NIXOS_OZONE_WL = "1";
+    QT_QPA_PLATFORM = "wayland;xcb";
+    QT_QPA_PLATFORMTHEME = "gtk3";
+    XCURSOR_THEME = "Bibata-Modern-Ice";
+    XCURSOR_SIZE = "24";
   };
 
   environment.etc = {
