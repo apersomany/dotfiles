@@ -1,0 +1,14 @@
+# Host keys are derived from /etc/ssh/ssh_host_ed25519_key.pub with ssh-to-age.
+# After adding a host, run `sops updatekeys secrets/*` from a machine holding
+# the admin key.
+keys:
+  - &admin age122cs9lkwpzx6ccpw73gjudy0t5ln6ueqcl9tckj4y2yrxvqv6u3qph6ap3
+  - &workstation age13vxw4wvs68jedx7e593shu93cd5c7yv06zrcs28dcrrg6e2u7uws2unzw9
+  - &scg-workstation age1kjr0tnvd5qu7z7zax6pq9d2zrleg8km2ajh3snssxa9us0k5uc7q9xxmgl
+creation_rules:
+  - path_regex: ^secrets/
+    key_groups:
+      - age:
+          - *admin
+          - *workstation
+          - *scg-workstation

@@ -57,42 +57,49 @@ It bootstraps through Osaka Azure Mudfish relays and requires
 tunnel endpoint. This does not guarantee every destination exits through KIX
 or that IPv6 is geolocated in Osaka.
 
-Provide credentials outside the repository and Nix store:
+The Mudfish credentials live in the sops-encrypted
+`secrets/waywarp-mudfish.env` (systemd environment-file syntax) and are
+decrypted to `/run/secrets/waywarp-mudfish` during activation. Edit them with
+`sops secrets/waywarp-mudfish.env`; quote values according to systemd
+environment-file syntax, especially passwords containing quotes or backslashes.
 
-```bash
-sudo install -d -m 0700 /var/lib/secrets
-sudo install -m 0600 -o root -g root /path/to/credentials.env /var/lib/secrets/waywarp-mudfish.env
-```
-
-The file uses systemd environment-file syntax:
-
-```text
-WAYWARP_MUDFISH_USERNAME='your username'
-WAYWARP_MUDFISH_PASSWORD='your password'
-```
-
-Do not commit this file. Quote values according to systemd environment-file
-syntax, especially passwords containing quotes or backslashes.
-
-If the file is missing, systemd skips `waywarp-osaka.service` before starting
-Waywarp. It does not fail the service or prevent boot. The bridge does not
-replace the host's default route or DNS, and nothing on this machine is
+If the host cannot decrypt the secret, systemd skips `waywarp-osaka.service`
+before starting Waywarp. It does not fail the service or prevent boot. The
+bridge does not replace the host's default route or DNS, and nothing is
 configured to require it. Traffic explicitly routed through or bound to
-`waywarp0` cannot use it while it is stopped. An existing but invalid credential
-file can cause service startup to fail; it still does not make the service a
-boot requirement.
-
-After providing credentials, start the service manually; creating the file
-alone does not trigger a start:
+`waywarp0` cannot use it while it is stopped. The service restarts whenever the
+secret changes. Check it with:
 
 ```bash
-sudo systemctl start waywarp-osaka.service
 sudo waywarp status 0
 journalctl -u waywarp-osaka.service
 sudo curl --interface waywarp0 https://www.cloudflare.com/cdn-cgi/trace
 ```
 
-The service starts automatically on subsequent boots when the credential file
-exists. Use interface-bound requests as above or add explicit destination routes
-to reach WARP; no SOCKS5/HTTP proxy listener is provided in bridge mode.
-The existing host Cloudflare WARP configuration is independent and unchanged.
+Use interface-bound requests as above or add explicit destination routes to
+reach WARP; no SOCKS5/HTTP proxy listener is provided in bridge mode. The
+existing host Cloudflare WARP configuration is independent and unchanged.
+
+## Secrets
+
+Secrets under `secrets/` are encrypted with [sops-nix](https://github.com/Mic92/sops-nix).
+`.sops.yaml` lists the recipients: the admin age key
+(`~/.config/sops/age/keys.txt`, backed up outside this machine) and each host's
+SSH host key converted to age. Hosts decrypt with
+`/etc/ssh/ssh_host_ed25519_key`, so the admin key never needs to be on a host
+that only consumes secrets. Secrets must only gate optional services.
+
+To bootstrap a new or reinstalled host:
+
+1. Install NixOS and switch to this flake. Secrets fail to decrypt, but the
+   system boots and services that need them are skipped.
+2. On a machine with the admin key, derive the host's age key and add it to
+   `.sops.yaml`, then re-encrypt, commit, and push:
+
+   ```bash
+   ssh-keyscan -t ed25519 <host> | ssh-to-age
+   sops updatekeys secrets/*
+   ```
+
+   Remove the host's previous key if it was reinstalled.
+3. Pull and run `nh os switch .` on the new host.

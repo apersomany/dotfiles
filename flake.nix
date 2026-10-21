@@ -12,6 +12,10 @@
       url = "github:saylesss88/persway";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     waywarp = {
       url = "github:apersomany/waywarp";
       inputs.nixpkgs.follows = "nixpkgs";

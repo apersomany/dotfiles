@@ -31,6 +31,7 @@
   imports = [
     ./boot.nix
     ./pi.nix
+    ./sops.nix
     ./user-files.nix
   ];
 
