@@ -5,8 +5,7 @@
   ...
 }:
 let
-  browserRuntime = inputs.browserRuntime.legacyPackages.${pkgs.stdenv.hostPlatform.system};
-  pnpm = pkgs.pnpm.override { nodejs-slim = browserRuntime.nodejs-slim_24; };
+  pnpm = pkgs.pnpm.override { nodejs-slim = pkgs.nodejs-slim_24; };
   claude = pkgs.writeShellApplication {
     name = "claude";
     runtimeInputs = [ pnpm ];
@@ -52,8 +51,8 @@ in
     claude
     pi
     pnpm
-    browserRuntime.nodejs_24
-    browserRuntime.agent-browser
+    pkgs.nodejs_24
+    pkgs.agent-browser
     pkgs.chromium
     pkgs.ffmpeg
   ];

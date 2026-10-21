@@ -3,7 +3,6 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
-    browserRuntime.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     herdr-nix.url = "github:herdrdev/herdr-nix";
     kime.url = "github:riey/kime";
     persway.url = "github:saylesss88/persway";

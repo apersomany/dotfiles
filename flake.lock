@@ -1,21 +1,5 @@
 {
   "nodes": {
-    "browserRuntime": {
-      "locked": {
-        "lastModified": 1791637130,
-        "narHash": "sha256-TuvwvSjJrpqyIYdjhQ7Wu+ADVfeOpO2Um21/V7TOubw=",
-        "owner": "NixOS",
-        "repo": "nixpkgs",
-        "rev": "ca1659429c950a11a565b5764e37a1b704e17ec8",
-        "type": "github"
-      },
-      "original": {
-        "owner": "NixOS",
-        "ref": "nixpkgs-unstable",
-        "repo": "nixpkgs",
-        "type": "github"
-      }
-    },
     "cachix": {
       "inputs": {
         "devenv": [
@@ -571,7 +555,6 @@
     },
     "root": {
       "inputs": {
-        "browserRuntime": "browserRuntime",
         "herdr-nix": "herdr-nix",
         "kime": "kime",
         "nixpkgs": "nixpkgs_4",
