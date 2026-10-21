@@ -2,7 +2,6 @@
   lib,
   pkgs,
   inputs,
-  username,
   ...
 }:
 let
@@ -64,22 +63,7 @@ in
   # to their only handler, and ~/.config/mimeapps.list still takes precedence.
   environment.etc."xdg/mimeapps.list".source = ../../files/mimeapps.list;
 
-  security.polkit.extraConfig = ''
-    polkit.addRule(function(action, subject) {
-      if (
-        subject.user == "${username}" &&
-        subject.active &&
-        subject.local &&
-        [
-          "org.freedesktop.udisks2.filesystem-mount",
-          "org.freedesktop.udisks2.filesystem-mount-system",
-          "org.freedesktop.udisks2.filesystem-unmount-others"
-        ].indexOf(action.id) >= 0
-      ) {
-        return polkit.Result.YES;
-      }
-    });
-  '';
+  security.polkit.extraConfig = builtins.readFile ../../files/polkit/udisks.rules;
 
   environment.systemPackages = [
     pkgs.alacritty
