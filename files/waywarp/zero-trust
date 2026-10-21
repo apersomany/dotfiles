@@ -1,0 +1,76 @@
+# Mirrors a Zero Trust registration's split tunnel and Gateway DNS policy onto
+# its Waywarp bridge. Run `up INDEX` once the instance is ready and
+# `down INDEX` after it stops; the bridge's routes disappear with its link.
+set -euo pipefail
+
+action=$1
+index=$2
+delegates=/run/systemd/dns-delegate.d
+delegate_prefix="waywarp-$index-"
+
+reload_resolved() {
+  # SIGHUP reloads DNS delegates and keeps per-link settings.
+  systemctl kill --signal=HUP systemd-resolved.service
+}
+
+if [[ $action == down ]]; then
+  rm -f "$delegates/$delegate_prefix"*.dns-delegate
+  reload_resolved
+  exit 0
+fi
+
+conf=/var/lib/waywarp/$index/registration/conf.json
+status=$(waywarp status "$index" --json)
+link=$(jq -r .access.link <<<"$status")
+subnet4=$(jq -r .access.subnets.v4 <<<"$status")
+subnet6=$(jq -r .access.subnets.v6 <<<"$status")
+
+# The namespace end of the bridge, the first address of each subnet, is the
+# gateway.
+IFS=./ read -r a b c d _ <<<"$subnet4"
+gateway4="$a.$b.$c.$((d + 1))"
+address6=${subnet6%/*}
+gateway6="${address6%:*}:$(printf '%x' $((16#${address6##*:} + 1)))"
+
+route() {
+  local destination=$1 family=-4 gateway=$gateway4
+  if [[ $destination == *:* ]]; then
+    family=-6
+    gateway=$gateway6
+    [[ $destination == */* ]] || destination+=/128
+  else
+    [[ $destination == */* ]] || destination+=/32
+  fi
+  # Leave networks the host already reaches another way, such as its LAN.
+  if ip "$family" route show exact "$destination" | grep -qv "dev $link"; then
+    return
+  fi
+  ip "$family" route replace "$destination" via "$gateway" dev "$link"
+}
+
+while read -r destination; do
+  route "$destination"
+done < <(jq -r '.policy.include[].address, .policy.always_include[].ip' "$conf")
+
+# Gateway answers DNS over TLS on its DoH addresses for the account's host.
+gateway_host="$(jq -r .policy.gateway_id "$conf").cloudflare-gateway.com"
+servers=()
+while read -r resolver; do
+  route "$resolver"
+  servers+=("$resolver#$gateway_host")
+done < <(jq -r '.policy.dns.doh_ips[]' "$conf")
+resolvectl dns "$link" "${servers[@]}"
+resolvectl domain "$link" '~.'
+resolvectl default-route "$link" yes
+resolvectl dnsovertls "$link" yes
+
+# Fallback domains with their own resolvers bypass Gateway. Those without
+# resolvers would use the host's local DNS, which this host does not have, so
+# they stay on Gateway.
+mkdir -p "$delegates"
+rm -f "$delegates/$delegate_prefix"*.dns-delegate
+while read -r suffix resolvers; do
+  printf '[Delegate]\nDNS=%s\nDomains=~%s\n' "$resolvers" "$suffix" \
+    >"$delegates/$delegate_prefix$suffix.dns-delegate"
+done < <(jq -r '.policy.fallback_domains[] | select((.dns_server // []) != []) | "\(.suffix) \(.dns_server | join(" "))"' "$conf")
+reload_resolved

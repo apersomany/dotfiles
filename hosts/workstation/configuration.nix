@@ -3,6 +3,7 @@
   networking.hostName = "workstation";
   imports = [
     ./hardware-configuration.nix
+    ./zero-trust.nix
     ../../modules/waywarp.nix
     ../../modules/base
     ../../modules/desktop
