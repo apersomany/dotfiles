@@ -57,7 +57,7 @@ It bootstraps through Osaka Azure Mudfish relays and requires
 tunnel endpoint. This does not guarantee every destination exits through KIX
 or that IPv6 is geolocated in Osaka.
 
-The Mudfish credentials live in the sops-encrypted
+Both hosts run it. The Mudfish credentials live in the sops-encrypted
 `secrets/waywarp-mudfish.env` (systemd environment-file syntax) and are
 decrypted to `/run/secrets/waywarp-mudfish` during activation. Edit them with
 `sops secrets/waywarp-mudfish.env`; quote values according to systemd

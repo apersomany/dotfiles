@@ -6,6 +6,7 @@
     ../../modules/base
     ../../modules/desktop
     ../../modules/drivers/nvidia.nix
+    ../../modules/waywarp.nix
   ];
 
   # LTS kernel (linuxPackages). nvidia.nix pins stable driver against it.
