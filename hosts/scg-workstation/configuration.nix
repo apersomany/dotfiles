@@ -1,5 +1,4 @@
 {
-  networking.hostName = "scg-workstation";
   imports = [
     ./hardware-configuration.nix
     ../../modules/base

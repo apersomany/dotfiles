@@ -16,7 +16,7 @@ let
 in
 {
   imports = [
-    ./font.nix
+    ./theme.nix
     ./kakaotalk.nix
     ./noctalia.nix
     ./sway.nix
@@ -81,19 +81,9 @@ in
     });
   '';
 
-  programs.dconf = {
-    enable = true;
-    profiles.user.databases = [
-      {
-        settings."org/gnome/desktop/interface".icon-theme = "Papirus-Dark";
-      }
-    ];
-  };
-
   environment.systemPackages = [
     pkgs.alacritty
     pkgs.alacritty.terminfo
-    pkgs.bibata-cursors
     pkgs.brightnessctl
     pkgs.celluloid
     pkgs.firefox
@@ -102,7 +92,6 @@ in
     pkgs.loupe
     pkgs.nautilus
     pkgs.nixd
-    pkgs.papirus-icon-theme
     pkgs.remmina
     pkgs.vesktop
     pkgs.vscode-fhs

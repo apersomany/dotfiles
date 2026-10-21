@@ -7,11 +7,4 @@
     };
     efi.canTouchEfiVariables = true;
   };
-
-  services.openssh = {
-    enable = true;
-    settings.PasswordAuthentication = true;
-  };
-
-  time.timeZone = "Asia/Seoul";
 }

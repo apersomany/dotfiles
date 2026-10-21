@@ -7,6 +7,13 @@
   ...
 }:
 {
+  imports = [
+    ./boot.nix
+    ./agents.nix
+    ./sops.nix
+    ./user-files.nix
+  ];
+
   nix = {
     settings = {
       experimental-features = [
@@ -14,10 +21,6 @@
         "flakes"
       ];
       auto-optimise-store = true;
-      substituters = [ "https://herdr.cachix.org" ];
-      trusted-public-keys = [
-        "herdr.cachix.org-1:3nH7IStRsS0ASfdonA0DCRR2ZrSCeWitZ7Kwew0cR4I="
-      ];
     };
     gc = {
       automatic = true;
@@ -26,14 +29,11 @@
     };
   };
 
-  security.sudo.wheelNeedsPassword = false;
+  nixpkgs.config.allowUnfree = true;
 
-  imports = [
-    ./boot.nix
-    ./pi.nix
-    ./sops.nix
-    ./user-files.nix
-  ];
+  time.timeZone = "Asia/Seoul";
+
+  security.sudo.wheelNeedsPassword = false;
 
   networking = {
     nameservers = [
@@ -47,11 +47,13 @@
     firewall.enable = false;
   };
 
-  nixpkgs.config.allowUnfree = true;
+  services.openssh = {
+    enable = true;
+    settings.PasswordAuthentication = true;
+  };
 
   environment = {
     systemPackages = [
-      pkgs.nh
       pkgs.gh
       pkgs.nix-search-cli
       pkgs.zip
@@ -66,10 +68,14 @@
     ];
 
     variables.SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt";
-    sessionVariables.NH_OS_FLAKE = "/home/${username}/dotfiles";
   };
 
   programs = {
+    nh = {
+      enable = true;
+      flake = "/home/${username}/dotfiles";
+    };
+
     direnv = {
       enable = true;
       nix-direnv.enable = true;
@@ -102,9 +108,7 @@
       };
     };
 
-    ssh = {
-      extraConfig = builtins.readFile ../../files/ssh/config;
-    };
+    ssh.extraConfig = builtins.readFile ../../files/ssh/config;
   };
 
   users.users.${username} = {

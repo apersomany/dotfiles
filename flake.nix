@@ -29,13 +29,13 @@
       userFullName = "Donghyun Shin";
       gitUserName = "apersomany";
       gitUserEmail = "aperso@aperso.dev";
-      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
       mkHost =
         name:
         nixpkgs.lib.nixosSystem {
           specialArgs = {
             inherit
-              self
               inputs
               username
               userFullName
@@ -44,15 +44,15 @@
               ;
           };
           modules = [
-            { nixpkgs.hostPlatform = "x86_64-linux"; }
-            (./. + "/hosts/${name}/configuration.nix")
+            ./hosts/${name}/configuration.nix
+            { networking.hostName = name; }
           ];
         };
     in
     {
       nixosConfigurations = nixpkgs.lib.genAttrs (builtins.attrNames (builtins.readDir ./hosts)) mkHost;
 
-      formatter.x86_64-linux = pkgs.writeShellApplication {
+      formatter.${system} = pkgs.writeShellApplication {
         name = "treefmt";
         runtimeInputs = [
           pkgs.treefmt
@@ -63,7 +63,7 @@
         '';
       };
 
-      checks.x86_64-linux = {
+      checks.${system} = {
         lint =
           pkgs.runCommand "lint"
             {
@@ -79,7 +79,7 @@
               touch $out
             '';
 
-        format = pkgs.runCommand "format" { nativeBuildInputs = [ self.formatter.x86_64-linux ]; } ''
+        format = pkgs.runCommand "format" { nativeBuildInputs = [ self.formatter.${system} ]; } ''
           cp -r ${self} src
           chmod -R u+w src
           cd src
@@ -91,7 +91,7 @@
         name: host: nixpkgs.lib.nameValuePair "host-${name}" host.config.system.build.toplevel
       ) self.nixosConfigurations;
 
-      devShells.x86_64-linux.default = pkgs.mkShell {
+      devShells.${system}.default = pkgs.mkShell {
         packages = [
           pkgs.statix
           pkgs.deadnix

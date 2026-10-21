@@ -18,14 +18,11 @@ let
         @anthropic-ai/claude-code@latest "$@"
     '';
   };
-  # Real `pi` binary on the system PATH so non-interactive consumers can
-  # spawn pi. TUI mode comes from the `tuiMode` setting so subcommands like
-  # `pi update --extensions` keep their argv[0] command word intact.
   pi = pkgs.writeShellApplication {
     name = "pi";
     runtimeInputs = [ pnpm ];
     text = ''
-      # Revalidate the latest tag on every launch without delaying new Pi releases.
+      # Revalidate the latest tag on every launch, exempt from the release-age delay.
       exec pnpm --config.prefer-online=true \
         --config.minimum-release-age-exclude=@earendil-works/pi-coding-agent \
         dlx --allow-build=@google/genai --allow-build=protobufjs --allow-build=esbuild \
@@ -34,6 +31,14 @@ let
   };
 in
 {
+  # herdr-nix's release binaries.
+  nix.settings = {
+    substituters = [ "https://herdr.cachix.org" ];
+    trusted-public-keys = [
+      "herdr.cachix.org-1:3nH7IStRsS0ASfdonA0DCRR2ZrSCeWitZ7Kwew0cR4I="
+    ];
+  };
+
   fileSystems."/home/${username}/.pi" = {
     overlay = {
       lowerdir = [ "/home/${username}/dotfiles/.pi" ];

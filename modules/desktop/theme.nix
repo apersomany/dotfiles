@@ -1,5 +1,20 @@
 { pkgs, ... }:
+let
+  cursorTheme = "Bibata-Modern-Ice";
+in
 {
+  environment = {
+    systemPackages = [
+      pkgs.bibata-cursors
+      pkgs.papirus-icon-theme
+    ];
+    sessionVariables = {
+      QT_QPA_PLATFORMTHEME = "gtk3";
+      XCURSOR_THEME = cursorTheme;
+      XCURSOR_SIZE = "24";
+    };
+  };
+
   fonts = {
     packages = [
       (pkgs.callPackage ./pkgs/freesentation.nix { })
@@ -21,16 +36,7 @@
           "Cascadia Code"
         ];
       };
-      localConf = ''
-        <match target="pattern">
-          <test name="lang" compare="contains">
-            <string>ko</string>
-          </test>
-          <edit name="family" mode="prepend" binding="strong">
-            <string>Freesentation</string>
-          </edit>
-        </match>
-      '';
+      localConf = builtins.readFile ../../files/fontconfig/korean.conf;
       useEmbeddedBitmaps = true;
       subpixel = {
         lcdfilter = "default";
@@ -38,6 +44,7 @@
       };
     };
   };
+
   programs.dconf = {
     enable = true;
     profiles.user = {
@@ -50,7 +57,8 @@
               font-antialiasing = "rgba";
               font-hinting = "slight";
               font-rgba-order = "rgb";
-              cursor-theme = "Bibata-Modern-Ice";
+              cursor-theme = cursorTheme;
+              icon-theme = "Papirus-Dark";
             };
           };
         }
