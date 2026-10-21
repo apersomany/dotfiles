@@ -8,7 +8,7 @@ This flake configures every host under `hosts/` (currently `workstation` and `sc
 - Do not introduce home-manager. Install packages through `environment.systemPackages`.
 - Use explicit `pkgs.` and `lib.` references; never use `with pkgs;` or `with lib;`.
 - Define user-specific values only in the `flake.nix` `let` block.
-- Keep application configuration as plain files under `files/`, not Nix string literals.
+- Keep application configuration as plain files under `files/`, not Nix string literals. Link read-only user configuration with `dotfiles.userFiles`.
 - Keep patches aligned with the revisions pinned in `flake.lock`; regenerate them when their input changes.
 - Work on `master`.
 

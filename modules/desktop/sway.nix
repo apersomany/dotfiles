@@ -24,11 +24,9 @@
     };
   };
 
-  systemd.user = {
-    tmpfiles.rules = [
-      "L+ %h/.config/sway/config - - - - /etc/sway/config"
-    ];
+  dotfiles.userFiles.".config/sway/config" = "/etc/sway/config";
 
+  systemd.user = {
     # Noctalia generates ~/.config/sway/noctalia after sway has started (and
     # rewrites it on wallpaper/theme changes) but sway never re-reads it on
     # its own, so watch the file and reload. KillMode=process lets the

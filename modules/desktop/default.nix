@@ -23,12 +23,10 @@ let
 in
 {
   imports = [
-    ./alacritty.nix
     ./font.nix
     ./kakaotalk.nix
     ./noctalia.nix
     ./sway.nix
-    ./user-dirs.nix
   ];
 
   i18n.inputMethod = {
@@ -59,6 +57,11 @@ in
     gnome.gnome-keyring.enable = true;
 
     gvfs.enable = true;
+  };
+
+  dotfiles.userFiles = {
+    ".config/alacritty/alacritty.toml" = ../../files/alacritty/alacritty.toml;
+    ".config/user-dirs.dirs" = ../../files/user-dirs.dirs;
   };
 
   xdg.portal.wlr.enable = true;

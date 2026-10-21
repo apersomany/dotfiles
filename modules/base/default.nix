@@ -31,6 +31,7 @@
   imports = [
     ./boot.nix
     ./pi.nix
+    ./user-files.nix
   ];
 
   networking = {
