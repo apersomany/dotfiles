@@ -1,6 +1,12 @@
-{ pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   cursorTheme = "Bibata-Modern-Ice";
+  subpixelOrder = config.fonts.fontconfig.subpixel.rgba;
 in
 {
   environment = {
@@ -40,7 +46,7 @@ in
       useEmbeddedBitmaps = true;
       subpixel = {
         lcdfilter = "default";
-        rgba = "rgb";
+        rgba = lib.mkDefault "rgb";
       };
     };
   };
@@ -54,9 +60,9 @@ in
           settings = {
             "org/gnome/desktop/interface" = {
               font-name = "Inter 11";
-              font-antialiasing = "rgba";
+              font-antialiasing = if subpixelOrder == "none" then "grayscale" else "rgba";
               font-hinting = "slight";
-              font-rgba-order = "rgb";
+              font-rgba-order = subpixelOrder;
               cursor-theme = cursorTheme;
               icon-theme = "Papirus-Dark";
             };

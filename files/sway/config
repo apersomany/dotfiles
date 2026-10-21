@@ -22,6 +22,10 @@ gaps inner 16
 default_border pixel 2
 output * scale 1.0
 exec /etc/sway/choose-highest-mode
+output "Micro-Star Int'l Co., Ltd. MAG 272Q X24 0x01010101" {
+    render_bit_depth 10
+    subpixel none
+}
 
 bindsym $mod+Return exec alacritty
 bindsym $mod+r exec noctalia msg panel-toggle launcher
