@@ -75,6 +75,8 @@ input type:keyboard {
     xkb_options korean:ralt_hangul,korean:rctrl_hanja
 }
 for_window [app_id="flameshot"] floating enable
+for_window [class="kakaotalk.exe"] floating enable
+for_window [class="kakaotalk.exe" title="^KakaoTalk$"] resize set 420 720, move position center
 exec kime
 exec persway daemon -d stack_main -s 50 -k tiled
 include /etc/sway/config.d/*
