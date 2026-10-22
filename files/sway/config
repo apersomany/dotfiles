@@ -76,6 +76,7 @@ input type:keyboard {
 }
 for_window [app_id="flameshot"] floating enable
 for_window [class="kakaotalk.exe"] fullscreen disable, floating disable, border pixel 2
+for_window [class="kakaotalk.exe" window_type="dialog"] floating enable
 exec kime
 exec persway daemon -d stack_main -s 50 -k tiled
 include /etc/sway/config.d/*
