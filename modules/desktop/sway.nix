@@ -26,6 +26,7 @@
   };
 
   environment.etc."sway/choose-highest-mode".source = ../../files/sway/choose-highest-mode;
+  environment.etc."sway/unfullscreen-kakaotalk".source = ../../files/sway/unfullscreen-kakaotalk;
 
   dotfiles.userFiles.".config/sway/config" = ../../files/sway/config;
 

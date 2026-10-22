@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Wine re-requests fullscreen whenever a KakaoTalk window is mapped or
+# resized, so a one-shot for_window rule cannot keep up.
+swaymsg -m -t subscribe '["window"]' |
+    jq --unbuffered -r '
+        select(.container.window_properties.class == "kakaotalk.exe"
+            and .container.fullscreen_mode != 0)
+        | .container.id' |
+    while read -r id; do
+        swaymsg "[con_id=$id] fullscreen disable" > /dev/null
+    done
