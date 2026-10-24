@@ -17,5 +17,7 @@
     ))
   ];
 
+  services.udev.extraRules = builtins.readFile ../../files/udev/workstation-gpu-power-limit.rules;
+
   system.stateVersion = "25.11";
 }

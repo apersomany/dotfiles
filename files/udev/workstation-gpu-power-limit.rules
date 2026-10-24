@@ -1,0 +1,2 @@
+# AMDGPU power limits use microwatts; match the discrete GPU, not the integrated GPU.
+ACTION=="add|change", SUBSYSTEM=="hwmon", ATTR{name}=="amdgpu", ATTRS{vendor}=="0x1002", ATTRS{device}=="0x7590", TEST=="power1_cap", ATTR{power1_cap}="120000000"
