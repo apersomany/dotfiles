@@ -11,7 +11,8 @@
 
 ## Code
 
-- Do not create or modify documentation or tests unless the user explicitly requests them. Running existing tests for validation is allowed.
+- When documentation already exists, updating it or adding documentation is allowed. Do not introduce documentation where none exists unless the user explicitly requests it.
+- Do not create or modify tests unless the user explicitly requests them. Running existing tests for validation is allowed.
 - Treat elegance as a core requirement: write simple, self-explanatory, maintainable code.
 - Seek elegant solutions within dependencies’ public APIs before considering low-level workarounds.
 - Comment only on non-obvious logic, using single-line comments. Never add docstrings.
