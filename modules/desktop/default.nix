@@ -58,15 +58,12 @@ in
 
   xdg.portal.wlr.enable = true;
 
-  # Off by default on Linux in both browsers; Brave's WebGPU needs Vulkan.
+  # WebGPU is off by default on Linux.
   programs.firefox = {
     enable = true;
     preferences."dom.webgpu.enabled" = true;
     preferencesStatus = "default";
   };
-  nixpkgs.overlays = [
-    (_: prev: { brave = prev.brave.override { enableVulkan = true; }; })
-  ];
 
   # Defaults for types more than one installed app claims; without them GIO
   # picks another browser or VS Code. Other types resolve to their only
